@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minecraft</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="models.css" />
+    <link rel="stylesheet" href="gui.css" />
+  </head>
+  <body>
+    <div id="world"></div>
+    <div id="ui">
+      <div id="buttons">
+        <button id="btnShowSave">Save</button>
+        <button id="btnLoad">Load</button>
+        <input type="file" hidden id="file" accept=".blocks" />
+      </div>
+      <dialog id="saveDialog">
+        <form method="dialog"><button id="saveClose" type="submit" value="close">Close</button></form>
+        <form method="dialog" id="saveForm">
+          <label for="filename">File name : </label>
+          <input type="text" id="filename" placeholder="File name..." value="build" style="margin: calc(var(--gui-scale) * 2px)" />
+          <button id="btnSave" type="submit" value="submit">Download</button>
+        </form>
+      </dialog>
+      <p id="status"></p>
+      <div id="hotbar"></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

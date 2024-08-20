@@ -1,0 +1,284 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-drag: none;
+  image-rendering: pixelated;
+  outline: none;
+  text-shadow: 2px 2px 0px black;
+}
+
+:root {
+  --gui-scale: 3;
+}
+
+body,
+html {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: skyblue;
+  font-size: calc(var(--gui-scale) * 8px);
+  color: white;
+  perspective: 350px;
+}
+
+#status {
+  position: fixed;
+  bottom: calc(var(--gui-scale) * 24px);
+  text-align: center;
+  width: 100vw;
+  pointer-events: none;
+}
+
+#saveClose {
+  position: fixed;
+  right: 0;
+  top: 0;
+  margin: calc(var(--gui-scale) * 8px);
+}
+
+dialog {
+  position: fixed;
+  color: inherit;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+}
+
+dialog[open] {
+  display: flex;
+}
+
+dialog::backdrop {
+  background-color: #0004;
+}
+
+#buttons {
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding: calc(var(--gui-scale) * 4px);
+}
+
+#hotbar {
+  position: fixed;
+  width: calc(182px * var(--gui-scale));
+  height: calc(22px * var(--gui-scale));
+  max-width: 100vw;
+  bottom: 0;
+  left: calc(50vw - (182px * var(--gui-scale) / 2));
+  right: calc(50vw - (182px * var(--gui-scale) / 2));
+  background-image: url("images/hotbar.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: calc(1px * var(--gui-scale));
+  scrollbar-width: none;
+  overflow-x: auto;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: auto;
+}
+
+#hotbar .slot {
+  position: relative;
+  scroll-snap-stop: always;
+  scroll-snap-align: center;
+  width: calc(16px * var(--gui-scale));
+  height: calc(16px * var(--gui-scale));
+  padding: calc(2px * var(--gui-scale));
+  margin: calc(2px * var(--gui-scale));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(16px * var(--gui-scale));
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#hotbar .slot:hover {
+  background-color: #fff4;
+  filter: brightness(1.5);
+}
+
+#hotbar .slot.selected::after {
+  content: "";
+  position: absolute;
+  left: calc(-4px * var(--gui-scale));
+  top: calc(-4px * var(--gui-scale));
+  right: 0;
+  bottom: 0;
+  width: calc(24px * var(--gui-scale));
+  height: calc(24px * var(--gui-scale));
+  background-image: url("images/hotbar_selected.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(24px * var(--gui-scale));
+  pointer-events: none;
+}
+
+#hotbar .slot.selected:hover::after {
+  filter: brightness(0.75);
+}
+
+/* ------------------------------------------- */
+
+@property --block-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 128px;
+}
+
+#world {
+  --block-size: 128px;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  transform: rotateX(-35.264389682754654315377000330019deg) rotateY(45deg) rotateZ(0deg);
+  transform-origin: center;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: --block-size 100ms ease-in-out;
+}
+
+.block {
+  --x: 0;
+  --y: 0;
+  --z: 0;
+  --width: var(--block-size);
+  --height: var(--block-size);
+  --length: var(--block-size);
+  /* width: var(--width);
+	height: var(--height); */
+  transform-style: preserve-3d;
+  position: absolute;
+  padding: 0;
+  transform: translate3D(calc(var(--x) * var(--block-size)), calc(var(--y) * var(--block-size)), calc(var(--z) * var(--block-size)));
+  backface-visibility: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: initial;
+}
+
+.face {
+  position: absolute;
+  width: var(--block-size);
+  height: var(--block-size);
+  backface-visibility: inherit;
+  outline: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.block:hover > .face {
+  box-shadow: 0px 0px 0px 1px black;
+}
+
+/* .block:active .face {
+  filter: brightness(1.5);
+} */
+
+.front {
+  transform: translateZ(calc(var(--length) / 2));
+  width: var(--width);
+  height: var(--height);
+  filter: brightness(0.9);
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(calc(var(--length) / 2));
+  width: var(--width);
+  height: var(--height);
+  filter: brightness(0.6);
+}
+
+.right {
+  transform: rotateY(90deg) translateZ(calc(var(--width) / 2));
+  width: var(--length);
+  height: var(--height);
+  filter: brightness(0.8);
+}
+
+.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--width) / 2));
+  width: var(--length);
+  height: var(--height);
+  filter: brightness(0.7);
+}
+
+.top {
+  transform: rotateX(90deg) translateZ(calc(var(--height) / 2));
+  width: var(--width);
+  height: var(--length);
+  filter: brightness(1);
+}
+
+.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--height) / 2));
+  width: var(--width);
+  height: var(--length);
+  filter: brightness(0.5);
+}
+
+#ui .block {
+  pointer-events: none;
+  --block-size: calc((16px * 0.6) * var(--gui-scale));
+  transform: rotateX(-35.264389682754654315377000330019deg) rotateY(45deg) rotateZ(0deg);
+}
+
+/* ------------------------------------------------------------- */
+
+.block.cube {
+  --width: var(--block-size);
+  --height: var(--block-size);
+  --length: var(--block-size);
+}
+
+.block.slab {
+  --height: calc(var(--block-size) * 0.5);
+}
+
+.block.slab.slab_bottom {
+  transform: translate3D(calc(var(--x) * var(--block-size)), calc(var(--y) * var(--block-size) + var(--block-size) * 0.25), calc(var(--z) * var(--block-size)));
+}
+
+.block.slab.slab_top {
+  transform: translate3D(calc(var(--x) * var(--block-size)), calc(var(--y) * var(--block-size) - var(--block-size) * 0.25), calc(var(--z) * var(--block-size)));
+}
+
+.block.slab.slab_bottom .face {
+  background-position: bottom;
+}
+
+.block.slab.slab_top .face {
+  background-position: top;
+}
+
+.block.grass .face {
+  display: none;
+}
+
+.block.grass .face.front {
+  display: block;
+  transform: rotateY(45deg);
+}
+
+.block.grass .face.right {
+  display: block;
+  transform: rotateY(315deg);
+}

@@ -1,0 +1,136 @@
+@font-face {
+  font-family: "Minecraft";
+  src: url("fonts/MinecraftRegular.otf");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Minecraft";
+  src: url("fonts/MinecraftItalic.otf");
+  font-style: italic;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Minecraft";
+  src: url("fonts/MinecraftBold.otf");
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Minecraft";
+  src: url("fonts/MinecraftBoldItalic.otf");
+  font-style: italic;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Minecraft Five Bold";
+  src: url("fonts/MinecraftFiveBold.ttf");
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Minecraft Ten";
+  src: url("fonts/MinecraftTen.ttf");
+  font-style: normal;
+  font-weight: 900;
+}
+
+:root {
+  --gui-scale: 3;
+}
+
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+  outline: none;
+  color: white;
+  text-shadow: 0.1em 0.1em 0px color-mix(in srgb, currentcolor 14%, #222d 76%);
+  font-weight: normal;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  text-rendering: optimizeSpeed;
+  font-family: "Minecraft";
+}
+
+body {
+  /* background-image: linear-gradient(0deg, #000b, #000b), url("images/dirt.png");
+  background-size: cover, calc(16px * var(--gui-scale)); */
+  margin: 0;
+  font-size: calc(var(--gui-scale) * 7px);
+}
+
+.title {
+  font-size: calc(24px * var(--gui-scale));
+  font-family: "Minecraft Ten";
+}
+
+a {
+  text-decoration: none;
+  border-bottom: calc(1px * var(--gui-scale)) solid white;
+}
+
+input {
+  appearance: none;
+  background-color: black;
+  border: calc(var(--gui-scale) * 1px) solid #a0a0a0;
+  color: white;
+  padding: calc(var(--gui-scale) * 3px);
+  font-size: calc(var(--gui-scale) * 7px);
+}
+
+input::placeholder {
+  color: darkgray;
+}
+
+input:is([type="checkbox"], [type="radio"]) {
+  margin-top: calc(var(--gui-scale) * 2px);
+  margin-bottom: calc(var(--gui-scale) * -2px);
+  padding: calc(var(--gui-scale) * 4px);
+}
+input:checked {
+  background-image: linear-gradient(#fff, #fff);
+  background-size: calc(4px * var(--gui-scale)) calc(4px * var(--gui-scale));
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+:is(button, input:is([type="button"], [type="submit"], [type="reset"]), select) {
+  appearance: none;
+  background-color: #6f6f6f;
+  border: calc(var(--gui-scale) * 1px) solid black;
+  padding: calc(var(--gui-scale) * 3px);
+  box-shadow: inset #fff4 calc(var(--gui-scale) * 1px) calc(var(--gui-scale) * 1px) 0px 0px, inset #0004 calc(var(--gui-scale) * -1px) calc(var(--gui-scale) * -2px) 0px 0px;
+  font-size: calc(var(--gui-scale) * 7px);
+}
+
+:is(button, input:is([type="button"], [type="submit"], [type="reset"]), select):disabled {
+  box-shadow: none;
+  background-color: dimgray;
+  color: lightgray;
+  opacity: 1;
+}
+
+:is(button, input, select):not(:disabled):is(:hover, :focus) {
+  border: calc(var(--gui-scale) * 1px) solid white;
+}
+
+:is(button, input:is([type="button"], [type="submit"], [type="reset"]), select):not(:disabled):active {
+  box-shadow: inset #0008 calc(var(--gui-scale) * 1px) calc(var(--gui-scale) * 2px) 0px 0px, inset #fff8 calc(var(--gui-scale) * -1px) calc(var(--gui-scale) * -1px) 0px 0px;
+}
+
+section {
+  background-color: #0008;
+  box-shadow: inset 0 6px 12px 0px black, inset 0 -6px 12px black;
+  padding: calc(var(--gui-scale) * 4px);
+  width: 100%;
+}
+
+.container {
+  width: min(256px * var(--gui-scale), 100%);
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+}
+
+.text-center {
+  text-align: center;
+}

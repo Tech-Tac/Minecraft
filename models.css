@@ -1,0 +1,77 @@
+/* ------------------------------------------------------------- */
+
+.block.dirt .face {
+  background-image: url("images/dirt.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.grass_block .face:is(.left, .right, .front, .back) {
+  background-image: url("images/grass_block_side.png");
+}
+
+.block.grass_block .face.top {
+  background-image: url("images/grass_block_top.png");
+}
+
+.block.grass_block .face.bottom {
+  background-image: url("images/dirt.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.grass .face {
+  background-image: url("images/grass.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.oak_log .face:is(.left, .right, .front, .back) {
+  background-image: url("images/oak_log.png");
+}
+
+.block.oak_log .face:is(.top, .bottom) {
+  background-image: url("images/oak_log_top.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.oak_leaves .face {
+  background-image: url("images/oak_leaves.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block:is(.oak_planks, .oak_slab) .face {
+  background-image: url("images/oak_planks.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.stone .face {
+  background-image: url("images/stone.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.cobblestone .face {
+  background-image: url("images/cobblestone.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.snow .face {
+  background-image: url("images/snow.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.copper .face {
+  background-image: url("images/copper.png");
+}
+
+/* ------------------------------------------------------------- */
+
+.block.glass .face {
+  background-image: url("images/glass.png");
+}
