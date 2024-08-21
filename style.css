@@ -269,16 +269,16 @@ dialog::backdrop {
   background-position: top;
 }
 
-.block.grass .face {
+.block.cutout .face {
   display: none;
 }
 
-.block.grass .face.front {
+.block.cutout .face.front {
   display: block;
   transform: rotateY(45deg);
 }
 
-.block.grass .face.right {
+.block.cutout .face.right {
   display: block;
   transform: rotateY(315deg);
 }
