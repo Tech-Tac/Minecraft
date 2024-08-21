@@ -135,7 +135,7 @@ function getBlockAt(x, y, z) {
 
 function placeBlock(x, y, z, face, fx, fy) {
   let newX = face == "right" ? parseInt(x) + 1 : face == "left" ? parseInt(x) - 1 : parseInt(x);
-  let newY = face == "top" ? parseInt(y) - 1 : face == "bottom" ? parseInt(y) + 1 : parseInt(y);
+  let newY = face == "top" ? parseInt(y) + 1 : face == "bottom" ? parseInt(y) - 1 : parseInt(y);
   let newZ = face == "front" ? parseInt(z) + 1 : face == "back" ? parseInt(z) - 1 : parseInt(z);
 
   let block = undefined;

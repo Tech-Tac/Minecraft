@@ -164,7 +164,7 @@ dialog::backdrop {
   transform-style: preserve-3d;
   position: absolute;
   padding: 0;
-  transform: translate3D(calc(var(--x) * var(--block-size)), calc(var(--y) * var(--block-size)), calc(var(--z) * var(--block-size)));
+  transform: translate3D(calc(var(--x) * var(--block-size)), calc(-1 * var(--y) * var(--block-size)), calc(var(--z) * var(--block-size)));
   backface-visibility: visible;
   display: flex;
   align-items: center;
