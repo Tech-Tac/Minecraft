@@ -45,11 +45,14 @@ let blockTypes = {
   },
 };
 
-let defaultBlock = {
+let blockTags = {
+  replaceable: ["grass"],
+};
+
+const defaultBlock = {
   id: "unknown",
-  name: "block",
+  name: "Unknown block",
   shape: "cube",
-  backface: false,
 };
 
 let currBlockType = { ...defaultBlock, id: "grass_block", ...blockTypes.grass_block };
@@ -81,10 +84,8 @@ function initialize() {
       newSlot.classList.add("slot");
 
       newSlot.addEventListener("click", function () {
-        let slots = document.querySelectorAll("#hotbar .slot");
-        for (let slot of slots) {
-          slot.classList.remove("selected");
-        }
+        let selectedSlot = document.querySelector("#hotbar > .slot.selected");
+        selectedSlot.classList.remove("selected");
 
         currBlockType = { ...defaultBlock, id: id, ...blockType };
         newSlot.classList.add("selected");
@@ -101,6 +102,8 @@ function initialize() {
       document.getElementById("hotbar").appendChild(newSlot);
     }
   }
+
+  document.querySelector("#hotbar > .slot").classList.add("selected");
 
   currBlockType = oldType;
   if (blockTypes.length < 9) {
@@ -127,25 +130,33 @@ function showStatus(text) {
 
 function getBlockAt(x, y, z) {
   for (let block of getBlocks()) {
-    if (block.style.getPropertyValue("--x") == x && block.style.getPropertyValue("--y") == y && block.style.getPropertyValue("--z") == z) {
+    if (block.x == x && block.y == y && block.z == z) {
       return block;
     }
   }
 }
 
-function placeBlock(x, y, z, face, fx, fy) {
-  let newX = face == "right" ? parseInt(x) + 1 : face == "left" ? parseInt(x) - 1 : parseInt(x);
-  let newY = face == "top" ? parseInt(y) + 1 : face == "bottom" ? parseInt(y) - 1 : parseInt(y);
-  let newZ = face == "front" ? parseInt(z) + 1 : face == "back" ? parseInt(z) - 1 : parseInt(z);
+function placeBlock(x, y, z, targetBlock, face, fx, fy) {
+  let newX = x;
+  let newY = y;
+  let newZ = z;
+
+  if (blockTags.replaceable.includes(targetBlock.blockId)) {
+    targetBlock.remove();
+  } else {
+    newX = face == "right" ? parseInt(x) + 1 : face == "left" ? parseInt(x) - 1 : parseInt(x);
+    newY = face == "top" ? parseInt(y) + 1 : face == "bottom" ? parseInt(y) - 1 : parseInt(y);
+    newZ = face == "front" ? parseInt(z) + 1 : face == "back" ? parseInt(z) - 1 : parseInt(z);
+  }
 
   let block = undefined;
 
   if (!getBlockAt(newX, newY, newZ)) {
     block = addBlock(newX, newY, newZ);
     if (currBlockType.shape == "slab") {
-      if (face == "top" || (fy >= blockSize * 0.5 && face != "bottom")) {
+      if (face == "top" || (face != "bottom" && fy >= blockSize * 0.5)) {
         block.classList.add("slab_bottom");
-      } else if (face == "bottom" || (fy < blockSize * 0.5 && face != "top")) {
+      } else if (face == "bottom" || (face != "top" && fy < blockSize * 0.5)) {
         block.classList.add("slab_top");
       }
     }
@@ -160,8 +171,8 @@ function addBlock(x, y, z) {
   blockElement.classList.add(currBlockType.shape);
   blockElement.classList.add(currBlockType.id);
 
-  blockElement.blockType = currBlockType;
   blockElement.blockId = currBlockType.id;
+  blockElement.blockType = currBlockType;
 
   blockElement.x = x;
   blockElement.y = y;
@@ -178,22 +189,24 @@ function addBlock(x, y, z) {
     }
   });
 
+  let faceElement = document.createElement("div");
+  faceElement.classList.add("face");
+  faceElement.block = blockElement;
+
   const faces = ["top", "bottom", "front", "back", "left", "right"];
 
   for (let face of faces) {
-    let faceElement = document.createElement("div");
-    faceElement.classList.add("face");
-    faceElement.classList.add(face);
+    const faceClone = faceElement.cloneNode();
+    faceClone.face = face;
+    faceClone.classList.add(face);
 
-    faceElement.block = blockElement;
-
-    faceElement.addEventListener("pointerdown", function (e) {
+    faceClone.addEventListener("pointerdown", function (e) {
       if (e.button == 2) {
-        placeBlock(x, y, z, face, e.offsetX, e.offsetY);
+        placeBlock(x, y, z, blockElement, face, e.offsetX, e.offsetY);
       }
     });
 
-    blockElement.appendChild(faceElement);
+    blockElement.appendChild(faceClone);
   }
 
   world.appendChild(blockElement);
@@ -225,6 +238,7 @@ document.addEventListener("mousemove", function (e) {
     rotY += newRotY;
     world.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
   }
+
   if (isPanning) {
     panX += e.movementX;
     panY += e.movementY;

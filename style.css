@@ -159,8 +159,6 @@ dialog::backdrop {
   --width: var(--block-size);
   --height: var(--block-size);
   --length: var(--block-size);
-  /* width: var(--width);
-	height: var(--height); */
   transform-style: preserve-3d;
   position: absolute;
   padding: 0;
@@ -188,10 +186,6 @@ dialog::backdrop {
 .block:hover > .face {
   box-shadow: 0px 0px 0px 1px black;
 }
-
-/* .block:active .face {
-  filter: brightness(1.5);
-} */
 
 .front {
   transform: translateZ(calc(var(--length) / 2));
