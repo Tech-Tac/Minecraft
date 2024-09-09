@@ -6,4 +6,4 @@ A CSS-based 3D block game.
 
 Not affiliated with Minecraft or Mojang Studios.
 
-Assets &copy; Mojang Studios AB
+Assets &copy; @Mojang Studios AB
