@@ -1,77 +1,46 @@
-/* ------------------------------------------------------------- */
-
-.block.dirt .face {
-  background-image: url("images/dirt.png");
+.block.dirt {
+  --texture: url("images/dirt.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.grass_block .face:is(.left, .right, .front, .back) {
-  background-image: url("images/grass_block_side.png");
+.block.grass_block {
+  --texture: url("images/grass_block_side.png");
+  --texture-top: url("images/grass_block_top.png");
+  --texture-bottom: url("images/dirt.png");
 }
 
-.block.grass_block .face.top {
-  background-image: url("images/grass_block_top.png");
+.block.grass {
+  --texture: url("images/grass.png");
 }
 
-.block.grass_block .face.bottom {
-  background-image: url("images/dirt.png");
+.block.oak_log {
+  --texture: url("images/oak_log.png");
+  --texture-y: url("images/oak_log_top.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.grass .face {
-  background-image: url("images/grass.png");
+.block.oak_leaves {
+  --texture: url("images/oak_leaves.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.oak_log .face:is(.left, .right, .front, .back) {
-  background-image: url("images/oak_log.png");
+.block:is(.oak_planks, .oak_slab) {
+  --texture: url("images/oak_planks.png");
 }
 
-.block.oak_log .face:is(.top, .bottom) {
-  background-image: url("images/oak_log_top.png");
+.block.stone {
+  --texture: url("images/stone.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.oak_leaves .face {
-  background-image: url("images/oak_leaves.png");
+.block.cobblestone {
+  --texture: url("images/cobblestone.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block:is(.oak_planks, .oak_slab) .face {
-  background-image: url("images/oak_planks.png");
+.block.snow {
+  --texture: url("images/snow.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.stone .face {
-  background-image: url("images/stone.png");
+.block.copper {
+  --texture: url("images/copper.png");
 }
 
-/* ------------------------------------------------------------- */
-
-.block.cobblestone .face {
-  background-image: url("images/cobblestone.png");
-}
-
-/* ------------------------------------------------------------- */
-
-.block.snow .face {
-  background-image: url("images/snow.png");
-}
-
-/* ------------------------------------------------------------- */
-
-.block.copper .face {
-  background-image: url("images/copper.png");
-}
-
-/* ------------------------------------------------------------- */
-
-.block.glass .face {
-  background-image: url("images/glass.png");
+.block.glass {
+  --texture: url("images/glass.png");
 }

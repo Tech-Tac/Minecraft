@@ -1,8 +1,10 @@
 # CSS Minecraft
 
-A 3D, freely rotatable, textured, CSS-based voxel editor.
+> This project uses Minecraft assets licensed by Mojang Studios, 
+> if you wish to use or fork this project, you must read and agree to 
+> the [Minecraft EULA](https://www.minecraft.net/eula).
 
-This project uses Minecraft assets owned by Mojang Studios, if you wish to use or fork this project, you must agree to the [Minecraft Eula](https://www.minecraft.net/eula).
+A CSS-based "3D" block game with a variety of blocks to choose from.
 
 Not affiliated with Minecraft or Mojang Studios.
 

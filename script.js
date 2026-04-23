@@ -1,4 +1,7 @@
+let viewport = document.getElementById("viewport");
+let camera = document.getElementById("camera");
 let world = document.getElementById("world");
+let hotbar = document.getElementById("hotbar");
 
 function getBlocks() {
   return document.querySelectorAll("#world .block");
@@ -45,6 +48,12 @@ let blockTypes = {
   },
 };
 
+let shapeFaces = {
+  cube: ["top", "bottom", "front", "back", "left", "right"],
+  slab: ["top", "bottom", "front", "back", "left", "right"],
+  cutout: ["top", "bottom", "front", "back", "left", "right", "cross1", "cross2"],
+};
+
 let blockTags = {
   replaceable: ["grass"],
 };
@@ -59,21 +68,24 @@ let currBlockType = { ...defaultBlock, id: "grass_block", ...blockTypes.grass_bl
 
 let statusTimer;
 
-let GUIScale = 3;
-let rotX = -35.264389682754654315377000330019;
-let rotY = 45;
-
-let panX = 0;
-let panY = 0;
-
 let blockSize = 128;
 
-let rotateSensitivity = 1;
+let GUIScale = 3;
+let rotX = 0;
+let rotY = 0;
+
+let posX = 0;
+let posZ = 0;
+let posY = 200;
+let movementSpeed = 16;
+
+let rotateSensitivity = 0.5;
 
 let isRotating = false;
 let isPanning = false;
 
 function initialize() {
+  move();
   const oldType = currBlockType;
 
   for (const id in blockTypes) {
@@ -82,39 +94,21 @@ function initialize() {
 
       let newSlot = document.createElement("div");
       newSlot.classList.add("slot");
-
-      newSlot.addEventListener("click", function () {
-        let selectedSlot = document.querySelector("#hotbar > .slot.selected");
-        selectedSlot.classList.remove("selected");
-
-        currBlockType = { ...defaultBlock, id: id, ...blockType };
-        newSlot.classList.add("selected");
-
-        showStatus(currBlockType.name);
-        document.getElementById("hotbar").scrollTop = 0;
-      });
+      newSlot.blockId = id;
+      newSlot.blockType = blockType;
 
       currBlockType = { ...defaultBlock, id: id, ...blockType };
       let smallBlock = addBlock(0, 0, 0);
       world.removeChild(smallBlock);
       newSlot.appendChild(smallBlock);
 
-      document.getElementById("hotbar").appendChild(newSlot);
+      hotbar.appendChild(newSlot);
     }
   }
 
-  document.querySelector("#hotbar > .slot").classList.add("selected");
+  hotbar.querySelector(".slot").classList.add("selected");
 
   currBlockType = oldType;
-  if (blockTypes.length < 9) {
-    let fullPages = Math.ceil(blockTypes.length / 9) * 9;
-    let difference = fullPages - blockTypes.length;
-    for (let i = 0; i < difference; i++) {
-      let newSlot = document.createElement("div");
-      newSlot.classList.add("slot");
-      document.getElementById("hotbar").appendChild(newSlot);
-    }
-  }
 }
 
 function showStatus(text) {
@@ -149,12 +143,15 @@ function placeBlock(x, y, z, targetBlock, face, fx, fy) {
     newZ = face == "front" ? parseInt(z) + 1 : face == "back" ? parseInt(z) - 1 : parseInt(z);
   }
 
-  let block = undefined;
+  let block;
 
-  if (!getBlockAt(newX, newY, newZ)) {
+  const blockThere = getBlockAt(newX, newY, newZ);
+  if (!blockThere) {
     block = addBlock(newX, newY, newZ);
     if (currBlockType.shape == "slab") {
-      if (face == "top" || (face != "bottom" && fy >= blockSize * 0.5)) {
+      if (targetBlock.blockType.shape == "slab") {
+        block.classList.add(targetBlock.classList.contains("slab_bottom") ? "slab_bottom" : "slab_top");
+      } else if (face == "top" || (face != "bottom" && fy >= blockSize * 0.5)) {
         block.classList.add("slab_bottom");
       } else if (face == "bottom" || (face != "top" && fy < blockSize * 0.5)) {
         block.classList.add("slab_top");
@@ -193,7 +190,7 @@ function addBlock(x, y, z) {
   faceElement.classList.add("face");
   faceElement.block = blockElement;
 
-  const faces = ["top", "bottom", "front", "back", "left", "right"];
+  const faces = shapeFaces[currBlockType.shape] ?? shapeFaces.cube;
 
   for (let face of faces) {
     const faceClone = faceElement.cloneNode();
@@ -214,7 +211,11 @@ function addBlock(x, y, z) {
   return blockElement;
 }
 
-addBlock(0, 0, 0, "grass_block");
+for (let x = -5; x < 5; x++) {
+  for (let z = -5; z < 5; z++) {
+    addBlock(x, -2, z);
+  }
+}
 
 document.addEventListener("mousedown", function (e) {
   if (e.target.classList.contains("face") || e.target.classList.contains("block")) {
@@ -229,63 +230,154 @@ document.addEventListener("mousedown", function (e) {
 
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 
+function setTranslate() {
+  world.style.transform = `translate3d(${/* Math.cos((rotY / 180) * Math.PI) *  */ posX}px, ${posY}px, ${/* Math.sin((rotY / 180) * Math.PI) * */ posZ}px)`;
+}
+
+function setRotate() {
+  camera.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+}
+
+function setTransform() {
+  setTranslate();
+  setRotate();
+}
+
+function wrap(value, min, max) {
+  const range = max - min;
+  return ((value - min + range) % range) + min;
+}
+
+function clamp(value, min, max) {
+  return Math.max(Math.min(value, max), min);
+}
+
+function normalizeRotation(value) {
+  return wrap(value, 0, 360);
+}
+
+function clampRotation(value) {
+  return clamp(value, -90, 90);
+}
+
 document.addEventListener("mousemove", function (e) {
-  if (isRotating) {
-    let newRotX = (-e.movementY * rotateSensitivity) % 360;
-    let newRotY = 0 - ((-e.movementX * rotateSensitivity) % 360);
+  let rotXAdd = (-e.movementY * rotateSensitivity) % 360;
+  let rotYAdd = -((-e.movementX * rotateSensitivity) % 360);
 
-    rotX += newRotX;
-    rotY += newRotY;
-    world.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-  }
+  rotX = clampRotation(rotX + rotXAdd);
+  rotY = normalizeRotation(rotY + rotYAdd);
 
-  if (isPanning) {
-    panX += e.movementX;
-    panY += e.movementY;
-
-    world.style.marginLeft = panX + "px";
-    world.style.marginTop = panY + "px";
-
-    world.style.transformOrigin = `${innerWidth / 2 + -panX}px ${innerHeight / 2 + -panY}px`;
-  }
+  setRotate();
 });
 
-document.addEventListener("mouseup", function (e) {
-  isRotating = false;
-  isPanning = false;
+const OGControls = {
+  forward: false,
+  back: false,
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+};
+
+let controls = { ...OGControls };
+
+let keyMap = {
+  KeyW: "forward",
+  KeyS: "back",
+  KeyA: "left",
+  KeyD: "right",
+  Space: "up",
+  ShiftLeft: "down",
+};
+
+document.addEventListener("keydown", (e) => {
+  controls[keyMap[e.code]] = true;
 });
 
-document.addEventListener("wheel", function (e) {
-  if (!(e.target.classList.contains("slot") || e.target.id == "hotbar")) {
-    let sensitivity = 0.25;
-    let delta = e.deltaY * -sensitivity;
-    let min = 4;
-    let max = (window.innerWidth + window.innerHeight) / 4;
+document.addEventListener("keyup", (e) => {
+  controls[keyMap[e.code]] = false;
+});
 
-    blockSize += delta;
-    blockSize = Math.max(min, Math.min(max, blockSize));
-    world.style.setProperty("--block-size", blockSize + "px");
+function move() {
+  requestAnimationFrame(move);
+
+  const amplitude = Math.sqrt((controls.forward || controls.back) + (controls.left || controls.right));
+
+  if (controls.forward) {
+    posZ += (Math.cos((rotY / 180) * Math.PI) * movementSpeed) / amplitude;
+    posX -= (Math.sin((rotY / 180) * Math.PI) * movementSpeed) / amplitude;
   }
-});
+  if (controls.back) {
+    posZ -= (Math.cos((rotY / 180) * Math.PI) * movementSpeed) / amplitude;
+    posX += (Math.sin((rotY / 180) * Math.PI) * movementSpeed) / amplitude;
+  }
+  if (controls.left) {
+    posX += (Math.sin(((rotY + 90) / 180) * Math.PI) * movementSpeed) / amplitude;
+    posZ -= (Math.cos(((rotY + 90) / 180) * Math.PI) * movementSpeed) / amplitude;
+  }
+  if (controls.right) {
+    posX -= (Math.sin(((rotY + 90) / 180) * Math.PI) * movementSpeed) / amplitude;
+    posZ += (Math.cos(((rotY + 90) / 180) * Math.PI) * movementSpeed) / amplitude;
+  }
+  if (controls.up) {
+    posY += movementSpeed;
+  }
+  if (controls.down) {
+    posY -= movementSpeed;
+  }
 
-document.getElementById("hotbar").addEventListener("wheel", function (e) {
-  if (e.deltaY != 0) {
+  if ({ ...controls } != { ...OGControls }) {
+    console.log("i moved");
+
+    setTranslate();
+  }
+}
+/* 
+viewport.addEventListener("click", async () => {
+  await viewport.requestPointerLock();
+});
+ */
+document.addEventListener(
+  "wheel",
+  function (e) {
     e.preventDefault();
-    let direction = e.deltaY > 0 ? 1 : e.deltaY < 0 ? -1 : e.deltaY;
-    document.getElementById("hotbar").scrollTo(this.scrollLeft + 24 * direction * GUIScale, 0);
-  }
-});
+    let delta = e.deltaY + e.deltaX;
+    if (delta == 0) {
+      return;
+    }
+
+    let selectedSlot = hotbar.querySelector(".slot.selected");
+    selectedSlot.classList.remove("selected");
+
+    let nextSlot = delta > 0 ? selectedSlot.nextSibling : selectedSlot.previousSibling;
+
+    if (!nextSlot) {
+      nextSlot = hotbar.querySelector(".slot" + (delta > 0 ? ":first-child" : ":last-child"));
+    }
+
+    nextSlot.classList.add("selected");
+    nextSlot.scrollIntoView();
+    hotbar.scrollTop = 0;
+
+    currBlockType = { ...defaultBlock, id: nextSlot.blockId, ...nextSlot.blockType };
+    showStatus(nextSlot.blockType.name);
+  },
+  { passive: false }
+);
 
 window.addEventListener("load", initialize);
+
+const blockSeparator = ";";
+const propertySeparator = ",";
 
 function loadBuild(saveText) {
   const oldType = currBlockType;
   for (let block of getBlocks()) {
     block.remove();
   }
-  let newBlocks = saveText.split("|");
+  let newBlocks = saveText.split(blockSeparator);
   for (let newBlock of newBlocks) {
-    let props = newBlock.split(",");
+    let props = newBlock.split(propertySeparator);
     let x = props[0];
     let y = props[1];
     let z = props[2];
@@ -300,9 +392,9 @@ function saveBuild() {
   let textArray = [];
   for (let block of getBlocks()) {
     blockProps = [block.x, block.y, block.z, block.blockId];
-    textArray.push(blockProps.join(","));
+    textArray.push(blockProps.join(propertySeparator));
   }
-  return textArray.join("|");
+  return textArray.join(blockSeparator);
 }
 
 document.getElementById("btnLoad").addEventListener("click", function () {

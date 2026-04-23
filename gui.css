@@ -53,8 +53,6 @@
 }
 
 body {
-  /* background-image: linear-gradient(0deg, #000b, #000b), url("images/dirt.png");
-  background-size: cover, calc(16px * var(--gui-scale)); */
   margin: 0;
   font-size: calc(var(--gui-scale) * 7px);
 }
@@ -67,6 +65,10 @@ body {
 a {
   text-decoration: none;
   border-bottom: calc(1px * var(--gui-scale)) solid white;
+}
+
+small {
+  opacity: 0.75;
 }
 
 input {

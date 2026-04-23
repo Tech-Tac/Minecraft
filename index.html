@@ -10,11 +10,21 @@
     <link rel="stylesheet" href="gui.css" />
   </head>
   <body>
-    <div id="world"></div>
+    <div id="viewport">
+      <div id="camera">
+        <div id="world"></div>
+      </div>
+    </div>
     <div id="ui">
       <div id="buttons">
-        <button id="btnShowSave">Save</button>
-        <button id="btnLoad">Load</button>
+        <button id="btnShowSave">
+          Save
+          <small>ctrl+s</small>
+        </button>
+        <button id="btnLoad">
+          Load
+          <small>ctrl+o</small>
+        </button>
         <input type="file" hidden id="file" accept=".blocks" />
       </div>
       <dialog id="saveDialog">
